@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomePage from "../views/HomePage.vue";
-import ProfileView from "../views/ProfileView.vue";
+import HomePage from "@/views/HomePage.vue";
+import ProfileView from "@/views/ProfileView.vue";
 import AboutView from "@/views/AboutView.vue";
-import AuthenticationPage from "../views/AuthenticationPage.vue";
+import AuthenticationPage from "@/views/AuthenticationPage.vue";
+import NotFoundPage from "@/views/NotFoundPage.vue";
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: "/auth",
     name: "auth",
     component:AuthenticationPage,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "notfound",
+    component: NotFoundPage,
   },
 ];
 
