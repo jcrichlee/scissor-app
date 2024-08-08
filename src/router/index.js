@@ -10,18 +10,20 @@ const routes = [
   {
     path: "/about",
     name: "about",
-    // route level code-splitting
-    // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+      import("../views/AboutView.vue"),
   },
   {
     path: "/profile",
     name: "profile",
-    // route level code-splitting
-    // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/ProfileView.vue"),
+      import("../views/ProfileView.vue"),
+  },
+  {
+    path: "/auth",
+    name: "auth",
+    component: () =>
+      import("../views/AuthenticationPage.vue"),
   },
 ];
 
