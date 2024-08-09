@@ -1,5 +1,3 @@
-Here is your complete `README.md` file content in markdown:
-
 ```markdown
 # semester-three-project
 
@@ -28,55 +26,54 @@ To set up the project locally, follow these steps:
 
 1. **Clone the repository:**
 
-   ```bash
+   ```
    git clone https://github.com/jcrichlee/scissor-app.git
    ```
 
 2. **Navigate to the project directory:**
 
-   ```bash
+   ```
    cd scissor-app
    ```
 
 3. **Install dependencies:**
 
-   ```bash
+   ```
    npm install
    ```
 
 4. **Run the development server:**
 
-   ```bash
+   ```
    npm run serve
    ```
 
 5. **Build for production:**
 
-   ```bash
+   ```
    npm run build
    ```
-
 ## Project Structure
 
 The project is organized as follows:
-
-```plaintext
+```
+```
 ├── src/
-│   ├── assets/              # Images, icons, and other static assets
-│   ├── components/          # Vue components
-│   │   ├── Footer.vue       # Footer component
-│   │   ├── FooterSection.vue # Reusable section component for the footer
-│   │   ├── FooterPattern.vue # SVG patterns used in the footer
-│   │   ├── ScrollToTopButton.vue # Button to scroll back to top
-│   ├── store/               # Vuex store
-│   │   ├── index.js         # Main store configuration
+│   ├── assets/                    # Images, icons, and other static assets
+│   ├── components/                # Vue components
+│   │   ├── Footer.vue             # Footer component
+│   │   ├── FooterSection.vue      # Reusable section component for the footer
+│   │   ├── FooterPattern.vue      # SVG patterns used in the footer
+│   │   ├── ScrollToTopButton.vue  # Button to scroll back to top
+│   ├── store/                     # Vuex store
+│   │   ├── index.js               # Main store configuration
 │   ├── css/
-│   │   ├── index.css        # Global CSS styles
-│   ├── App.vue              # Main app component
-│   ├── main.js              # App entry point
+│   │   ├── index.css              # Global CSS styles
+│   ├── App.vue                    # Main app component
+│   ├── main.js                    # App entry point
 ├── public/
-│   ├── index.html           # HTML template
-├── README.md                # Project documentation
+│   ├── index.html                 # HTML template
+├── README.md                      # Project documentation
 ```
 
 ## Key Components
@@ -87,7 +84,7 @@ The `Footer.vue` component serves as the footer for the application, providing s
 
 **Example of the Footer Template:**
 
-```vue
+```
 <template>
   <footer class="footer">
     <section class="footerLeft">
@@ -118,7 +115,7 @@ The `ScrollToTopButton.vue` is a simple component that enhances user experience 
 
 **Example of the ScrollToTopButton Template:**
 
-```vue
+```
 <template>
   <button @click="scrollToTop" class="scrollToTop" aria-label="Scroll to top">
     &#8593;
@@ -143,7 +140,7 @@ The project uses Vuex for state management, centralizing data flow across the ap
 
 **Example of the State:**
 
-```javascript
+```
 state: {
   faqs: [
     {
@@ -163,7 +160,7 @@ state: {
 
 **Example of a Getter:**
 
-```javascript
+```
 getters: {
   getFaqs: (state) => state.faqs,
 }
@@ -175,7 +172,7 @@ Global styles are handled in `main.js/@/assets/styles/index.css`, ensuring that 
 
 ### Example of a Global Style:
 
-```css
+```
 .scrollToTop {
   position: sticky;
   left: 96%;
@@ -214,8 +211,3 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 3. Commit your changes (`git commit -m 'Added some new features'`).
 4. Push to the branch (`git push origin feature/new-feature`).
 5. Open a pull request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
