@@ -1,4 +1,3 @@
-```markdown
 # semester-three-project
 
 # Scissor - URL Shortening Service
@@ -25,38 +24,31 @@
 To set up the project locally, follow these steps:
 
 1. **Clone the repository:**
-
-   ```
+```
    git clone https://github.com/jcrichlee/scissor-app.git
-   ```
-
+```
 2. **Navigate to the project directory:**
-
-   ```
+```
    cd scissor-app
-   ```
+```
 
 3. **Install dependencies:**
-
-   ```
+```
    npm install
-   ```
+```
 
 4. **Run the development server:**
-
-   ```
+```
    npm run serve
-   ```
+```
 
 5. **Build for production:**
-
-   ```
+```
    npm run build
-   ```
+```
 ## Project Structure
 
 The project is organized as follows:
-```
 ```
 ├── src/
 │   ├── assets/                    # Images, icons, and other static assets
