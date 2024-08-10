@@ -19,7 +19,7 @@
                     </p>
                 </div>
                 <div class="cta">
-                    <a href="#" class="primary">Sign Up</a>
+                    <a href="/auth" class="primary">Sign Up</a>
                     <a href="#" class="secondary">Learn more</a>
                 </div>
             </div>

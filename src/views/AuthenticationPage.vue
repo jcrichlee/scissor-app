@@ -20,6 +20,9 @@ export default {
 
 <style scoped>
 /* Add your custom styles here */
+div {
+  margin-top: 96px;
+}
 div,
 button {
   display: flex;
