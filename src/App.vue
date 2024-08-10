@@ -1,16 +1,17 @@
 <template>
+  <router-view />
   <PreloaderComponent :isLoading="isLoading" />
-  <router-view/>
 </template>
 
 <script>
-import { ref } from 'vue';
-import PreloaderComponent from './components/PreloaderComponent.vue';
+import { ref } from "vue";
+import PreloaderComponent from "./components/PreloaderComponent.vue";
+import HomePage from "./views/HomePage.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    PreloaderComponent
+    PreloaderComponent,
   },
   setup() {
     const isLoading = ref(true);
@@ -21,8 +22,8 @@ export default {
     }, 2000);
 
     return {
-      isLoading
-    }
-  }
-}
+      isLoading,
+    };
+  },
+};
 </script>

@@ -2,7 +2,7 @@
   <section id="pricing" class="pricing">
     <div class="middle">
       <img
-        src="@/assets/images/whyScissorsDivider.png"
+        :src="dividerSrc"
         class="divider"
         alt="Stylized divider for the title."
       />
@@ -33,10 +33,7 @@
                 :key="index"
                 class="item"
               >
-                <img
-                  :src="require(`@/assets/images/${benefit.icon}`)"
-                  alt="tick"
-                />
+                <img :src="getIconSrc(benefit.icon)" alt="tick" />
                 <p>{{ benefit.text }}</p>
               </div>
             </div>
@@ -52,7 +49,13 @@
 </template>
 
 <script>
-export default {
+import { defineComponent } from "vue";
+
+// Import images directly
+import checkCircleBlue from "@/assets/images/check-circle-blue.png";
+import whyScissorsDivider from "@/assets/images/whyScissorsDivider.png";
+
+export default defineComponent({
   data() {
     return {
       plans: [
@@ -61,11 +64,11 @@ export default {
           price: "Free",
           description: "Free plan for all users",
           benefits: [
-            { icon: "check-circle-blue.png", text: "Unlimited URL Shortening" },
-            { icon: "check-circle-blue.png", text: "Basic Link Analysis" },
-            { icon: "check-circle-blue.png", text: "Customizable Short Links" },
-            { icon: "check-circle-blue.png", text: "Standard Support" },
-            { icon: "check-circle-blue.png", text: "Ad-supported" },
+            { icon: "check-circle-blue", text: "Unlimited URL Shortening" },
+            { icon: "check-circle-blue", text: "Basic Link Analysis" },
+            { icon: "check-circle-blue", text: "Customizable Short Links" },
+            { icon: "check-circle-blue", text: "Standard Support" },
+            { icon: "check-circle-blue", text: "Ad-supported" },
           ],
           stacked: false,
         },
@@ -74,14 +77,14 @@ export default {
           price: "$15/month",
           description: "Ideal for business creators",
           benefits: [
-            { icon: "check-circle-blue.png", text: "Enhanced Link Analytics" },
-            { icon: "check-circle-blue.png", text: "Custom Branded Domains" },
+            { icon: "check-circle-blue", text: "Enhanced Link Analytics" },
+            { icon: "check-circle-blue", text: "Custom Branded Domains" },
             {
-              icon: "check-circle-blue.png",
+              icon: "check-circle-blue",
               text: "Advanced Link Customization",
             },
-            { icon: "check-circle-blue.png", text: "Priority Support" },
-            { icon: "check-circle-blue.png", text: "Ad-free Experience" },
+            { icon: "check-circle-blue", text: "Priority Support" },
+            { icon: "check-circle-blue", text: "Ad-free Experience" },
           ],
           stacked: false,
         },
@@ -90,15 +93,15 @@ export default {
           price: "$25/month",
           description: "Share with up to 10 users",
           benefits: [
-            { icon: "check-circle-blue.png", text: "Team Collaboration" },
+            { icon: "check-circle-blue", text: "Team Collaboration" },
             {
-              icon: "check-circle-blue.png",
+              icon: "check-circle-blue",
               text: "User Roles and Permissions",
             },
-            { icon: "check-circle-blue.png", text: "Enhanced Security" },
-            { icon: "check-circle-blue.png", text: "API Access" },
+            { icon: "check-circle-blue", text: "Enhanced Security" },
+            { icon: "check-circle-blue", text: "API Access" },
             {
-              icon: "check-circle-blue.png",
+              icon: "check-circle-blue",
               text: "Dedicated Account Manager",
             },
           ],
@@ -107,9 +110,23 @@ export default {
       ],
     };
   },
-};
+  computed: {
+    dividerSrc() {
+      return whyScissorsDivider;
+    },
+  },
+  methods: {
+    getIconSrc(iconName) {
+      const iconMap = {
+        "check-circle-blue": checkCircleBlue,
+        // Add more icon mappings here if needed
+      };
+      return iconMap[iconName] || ""; // Return an empty string if the icon is not found
+    },
+  },
+});
 </script>
 
 <style scoped>
-
+/* Your styles here */
 </style>

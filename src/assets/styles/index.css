@@ -63,6 +63,14 @@ header {
   align-items: center;
   justify-content: center;
   gap: 9rem;
+  padding: 1.5rem;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 999;
+  background-color: #fff;
+  margin-top: 0;
 }
 header .logo {
   height: 2.5rem;
