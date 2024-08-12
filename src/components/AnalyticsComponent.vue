@@ -45,33 +45,54 @@
 </template>
 
 <script>
+import { db, auth } from "../firebase"
+// You can use a library like 'qrcode' if you want to generate QR codes locally
+
 export default {
-  name: 'AnalyticsComponent',
+  name: "AnalyticsComponent",
   data() {
     return {
-      url: '',
-      selectedDomain: '',
-      alias: '',
-      trimmedUrls: [] // Store trimmed URLs
+      url: "",
+      selectedDomain: "",
+      alias: "",
+      trimmedUrls: [], // Store trimmed URLs
+      qrCodeUrl: "" // For storing the generated QR code URL
     }
   },
   methods: {
     async trimURL() {
       if (!this.url || !this.selectedDomain) {
-        alert('Please enter a URL and select a domain.')
+        alert("Please enter a URL and select a domain.")
         return
       }
 
       const trimmedUrl = `${this.selectedDomain}/${this.alias ? this.alias : this.generateRandomAlias()}`
 
-      // Store the trimmed URL
+      try {
+        // Store the trimmed URL in Firestore
+        const userId = auth.currentUser ? auth.currentUser.uid : null
+        const docRef = await db.collection("urls").add({
+          originalURL: this.url,
+          shortenedURL: trimmedUrl,
+          userId,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        })
+
+        console.log("Document written with ID: ", docRef.id)
+
+        // Copy the trimmed URL to the clipboard
+        await this.copyToClipboard(trimmedUrl)
+
+        // Optionally, generate a QR code (this example uses a placeholder)
+        this.qrCodeUrl = await this.generateQRCode(trimmedUrl)
+
+        // Notify the user that the URL has been copied
+        alert(`Trimmed URL created and copied to clipboard: ${trimmedUrl}`)
+      } catch (error) {
+        console.error("Error adding document: ", error)
+      }
+
       this.storeTrimmedUrl(trimmedUrl)
-
-      // Copy the trimmed URL to the clipboard
-      await this.copyToClipboard(trimmedUrl)
-
-      // Notify the user that the URL has been copied
-      alert(`Trimmed URL created and copied to clipboard: ${trimmedUrl}`)
     },
     generateRandomAlias() {
       return Math.random().toString(36).substring(7) // Generates a random string as alias
@@ -85,20 +106,27 @@ export default {
       })
 
       // Reset fields after trimming
-      this.url = ''
-      this.selectedDomain = ''
-      this.alias = ''
+      this.url = ""
+      this.selectedDomain = ""
+      this.alias = ""
     },
     async copyToClipboard(text) {
       try {
         await navigator.clipboard.writeText(text)
-        console.log('URL copied to clipboard')
+        console.log("URL copied to clipboard")
       } catch (err) {
-        console.error('Failed to copy: ', err)
+        console.error("Failed to copy: ", err)
       }
+    },
+    async generateQRCode(url) {
+      // Placeholder for QR code generation logic
+      // You can use a library like `qrcode` to generate it locally or an external API
+      return `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(url)}&size=100x100`
     }
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Add your styles here */
+</style>

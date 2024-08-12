@@ -11,22 +11,13 @@
       <button @click="editProfile">Edit profile</button>
     </div>
     <div class="tabs">
-      <button
-        :class="{ active: activeTab === 'general' }"
-        @click="activeTab = 'general'"
-      >
+      <button :class="{ active: activeTab === 'general' }" @click="activeTab = 'general'">
         General Information
       </button>
-      <button
-        :class="{ active: activeTab === 'urls' }"
-        @click="activeTab = 'urls'"
-      >
+      <button :class="{ active: activeTab === 'urls' }" @click="activeTab = 'urls'">
         Shortened URLs
       </button>
-      <button
-        :class="{ active: activeTab === 'settings' }"
-        @click="activeTab = 'settings'"
-      >
+      <button :class="{ active: activeTab === 'settings' }" @click="activeTab = 'settings'">
         Settings
       </button>
     </div>
@@ -60,13 +51,13 @@ export default {
       phoneNumber: "123-456-7890",
       emailAddress: "johndoe@example.com",
       userId: "24462843",
-      activeTab: "general",
-    };
+      activeTab: "general"
+    }
   },
   methods: {
-    editProfile() {},
-  },
-};
+    editProfile() {}
+  }
+}
 </script>
 
 <style scoped>
