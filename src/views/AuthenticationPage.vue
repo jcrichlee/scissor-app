@@ -23,16 +23,22 @@ const user = reactive({
   email: "",
   password: "",
   username: "",
-  firstName: "",
-  userId: ""
+  firstName: ""
 })
 
-const createUser = async () => {
+const createUser = async (userId) => {
   try {
     const auth = getAuth() // Initialize the Auth instance
-    const document = await setDoc(doc(db, "users", user.userId), { ...user })
-    console.log("User created:", document)
-    console.log("User created:", userCredential.user)
+    const documentRef = doc(db, "users", userId);
+
+    await setDoc(documentRef, {
+      email: user.email,
+      password: user.password,
+      firstName: user.firstName,
+      username: user.username
+    });
+
+    console.log("User created with ID:", userId)
   } catch (error) {
     console.log("Error creating user:", error.message)
   }
@@ -41,16 +47,12 @@ const createUser = async () => {
 const signUp = async () => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password)
-    console.log("User signed up:", userCredential)
+    console.log("User signed up:", userCredential);
+
     if (userCredential) {
-      await createUser({
-        email: user.email,
-        password: user.password,
-        firstName: user.firstName,
-        username: user.username,
-        userId: userCredential.user.uid
-      })
+      await createUser(userCredential.user.uid);
     }
+
     console.log("User signed up:", userCredential.user)
   } catch (error) {
     console.log("Error signing up:", error.message)
