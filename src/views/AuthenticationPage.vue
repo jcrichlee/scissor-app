@@ -1,8 +1,10 @@
 <template>
   <div class="auth-container">
     <h2>Sign Up / Sign In</h2>
-    <input v-model="email" type="email" placeholder="Email" class="auth-input" />
-    <input v-model="password" type="password" placeholder="Password" class="auth-input" />
+    <input v-model="user.email" type="email" placeholder="Email" class="auth-input" />
+    <input v-model="user.password" type="password" placeholder="Password" class="auth-input" />
+    <input v-model="user.username" type="username" placeholder="Username" class="auth-input" />
+    <input v-model="user.firstName" type="firstName" placeholder="Firstname" class="auth-input" />
     <div class="button-container">
       <button @click="signUp" class="auth-button">Sign Up</button>
       <button @click="signIn" class="auth-button secondary">Sign In</button>
@@ -10,7 +12,60 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "@/firebase"
+import { doc, setDoc } from "firebase/firestore"
+import { reactive } from "vue"
+import { db } from "@/firebase"
+
+const user = reactive({
+  email: "",
+  password: "",
+  username: "",
+  firstName: "",
+  userId: ""
+})
+
+const createUser = async () => {
+  try {
+    const auth = getAuth() // Initialize the Auth instance
+    const document = await setDoc(doc(db, "users", user.userId), { ...user })
+    console.log("User created:", document)
+    console.log("User created:", userCredential.user)
+  } catch (error) {
+    console.log("Error creating user:", error.message)
+  }
+}
+
+const signUp = async () => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password)
+    console.log("User signed up:", userCredential)
+    if (userCredential) {
+      await createUser({
+        email: user.email,
+        password: user.password,
+        firstName: user.firstName,
+        username: user.username,
+        userId: userCredential.user.uid
+      })
+    }
+    console.log("User signed up:", userCredential.user)
+  } catch (error) {
+    console.log("Error signing up:", error.message)
+  }
+}
+
+const signIn = async () => {
+  try {
+    const auth = getAuth() // Initialize the Auth instance
+    const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password)
+    console.log("User signed in:", userCredential.user)
+  } catch (error) {
+    console.log("Error signing in:", error.message)
+  }
+}
 </script>
 
 <style scoped>
