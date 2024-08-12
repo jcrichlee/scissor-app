@@ -17,11 +17,11 @@ import PreloaderComponent from "./components/PreloaderComponent.vue";
         <span class="icon-bar"></span>
       </label>
       <ul class="menu">
-        <li><a href="#myurls">My URLs</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#analytics">Analytics</a></li>
-        <li><a href="#faqs">FAQs</a></li>
+        <li><a href="/profile">My URLs</a></li>
+        <li><a href="">Features</a></li>
+        <li><a href="">Pricing</a></li>
+        <li><a href="">Analytics</a></li>
+        <li><a href="">FAQs</a></li>
       </ul>
     </nav>
     <div class="cta">

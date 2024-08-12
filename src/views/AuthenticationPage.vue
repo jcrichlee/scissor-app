@@ -11,36 +11,6 @@
 </template>
 
 <script>
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
-
-export default {
-  data() {
-    return {
-      email: "",
-      password: ""
-    }
-  },
-  methods: {
-    async signUp() {
-      try {
-        const auth = getAuth() // Initialize the Auth instance
-        const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
-        alert("User signed up:", userCredential.user)
-      } catch (error) {
-        alert("Error signing up:", error.message)
-      }
-    },
-    async signIn() {
-      try {
-        const auth = getAuth() // Initialize the Auth instance
-        const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password)
-        alert("User signed in:", userCredential.user)
-      } catch (error) {
-        alert("Error signing in:", error.message)
-      }
-    }
-  }
-}
 </script>
 
 <style scoped>
@@ -53,6 +23,7 @@ export default {
   background-color: #f9f9f9;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
+  margin-top: 96px;
 }
 
 h2 {
