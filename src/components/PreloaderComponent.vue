@@ -16,15 +16,25 @@
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+
 export default {
-  name: 'PreloaderComponent',
-  props: {
-    isLoading: {
-      type: Boolean,
-      default: true
-    }
-  }
-}
+  name: "PreloaderComponent",
+  setup() {
+    const isLoading = ref(true);
+
+    // Simulate a loading process, e.g., fetching data or waiting for async operations
+    onMounted(() => {
+      setTimeout(() => {
+        isLoading.value = false;
+      }, 2000); // Adjust the timeout duration as needed
+    });
+
+    return {
+      isLoading,
+    };
+  },
+};
 </script>
 
 <style scoped>

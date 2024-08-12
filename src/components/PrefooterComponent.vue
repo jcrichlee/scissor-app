@@ -144,6 +144,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 export default {
   data() {
     return {
@@ -153,6 +155,8 @@ export default {
   methods: {
     handleGetStarted() {
       console.log("Get Started button clicked");
+      const router = useRouter();
+      router.push("/auth");
     },
   },
 };

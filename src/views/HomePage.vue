@@ -1,6 +1,5 @@
 <template>
   <div>
-    <HeaderComponent />
     <MainComponent />
     <FeaturesComponent />
     <WhyScissor />
@@ -13,8 +12,7 @@
   </div>
 </template>
 
-<script>
-import HeaderComponent from "@/components/HeaderComponent.vue";
+<script setup>
 import MainComponent from "@/components/MainComponent.vue";
 import FeaturesComponent from "@/components/FeaturesComponent.vue";
 import WhyScissor from "@/components/WhyScissor.vue";
@@ -24,20 +22,7 @@ import FaqSection from "@/components/FaqSection.vue";
 import PrefooterComponent from "@/components/PrefooterComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 import ScrollToTop from "@/components/ScrollToTop.vue";
-
-export default {
-  name: "HomePage",
-  components: {
-    HeaderComponent,
-    MainComponent,
-    FeaturesComponent,
-    WhyScissor,
-    PricingComponent,
-    AnalyticsComponent,
-    FaqSection,
-    PrefooterComponent,
-    FooterComponent,
-    ScrollToTop,
-  },
-};
 </script>
+
+<style scoped>
+</style>

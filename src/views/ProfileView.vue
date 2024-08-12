@@ -11,22 +11,13 @@
       <button @click="editProfile">Edit profile</button>
     </div>
     <div class="tabs">
-      <button
-        :class="{ active: activeTab === 'general' }"
-        @click="activeTab = 'general'"
-      >
+      <button :class="{ active: activeTab === 'general' }" @click="activeTab = 'general'">
         General Information
       </button>
-      <button
-        :class="{ active: activeTab === 'urls' }"
-        @click="activeTab = 'urls'"
-      >
+      <button :class="{ active: activeTab === 'urls' }" @click="activeTab = 'urls'">
         Shortened URLs
       </button>
-      <button
-        :class="{ active: activeTab === 'settings' }"
-        @click="activeTab = 'settings'"
-      >
+      <button :class="{ active: activeTab === 'settings' }" @click="activeTab = 'settings'">
         Settings
       </button>
     </div>
@@ -40,7 +31,24 @@
       <div v-if="activeTab === 'urls'">
         <!-- Shortened URLs Content -->
         <h4>Shortened URLs</h4>
-        <p>List of shortened URLs...</p>
+        <div class="url-list-container" v-if="!loading">
+          <h2>Your Shortened URLs</h2>
+          <ul class="url-list">
+            <li v-for="url in urls" :key="url.id" class="url-item">
+              <div class="url-info">
+                <p class="original-url"><strong>Original:</strong> {{ url.originalURL }}</p>
+                <p class="shortened-url">
+                  <strong>Shortened:</strong>
+                  <a :href="url.shortenedURL" target="_blank">{{ url.shortenedURL }}</a>
+                </p>
+                <p class="created-at">
+                  <strong>Created At:</strong> {{ url.createdAt?.toDate().toLocaleString() }}
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
       </div>
       <div v-if="activeTab === 'settings'">
         <!-- Settings Content -->
@@ -52,21 +60,23 @@
 </template>
 
 <script>
+import profilePicture from "@/assets/images/profile-picture.jpg";
+
 export default {
   data() {
     return {
-      profilePicture: require("@/assets/images/profile-picture.jpg"),
+      profilePicture,
       fullName: "Richard Adeyele",
       phoneNumber: "123-456-7890",
       emailAddress: "johndoe@example.com",
       userId: "24462843",
-      activeTab: "general",
-    };
+      activeTab: "general"
+    }
   },
   methods: {
-    editProfile() {},
-  },
-};
+    editProfile() {}
+  }
+}
 </script>
 
 <style scoped>
@@ -76,6 +86,7 @@ export default {
   align-items: center;
   width: 100vw;
   padding: 24px;
+  margin-top: 96px;
 }
 
 .user-profile {
@@ -125,6 +136,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .tab-content h4 {
@@ -151,10 +163,62 @@ button {
 
 .tab-content {
   width: 100%;
-  /* border: 1px solid #ccc; */
-  /* padding: 16px; */
   border-radius: 4px;
   background-color: #fff;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.url-list-container {
+  width: 96vw;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  text-align: center;
+}
+
+.url-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.url-item {
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.url-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.original-url,
+.shortened-url,
+.created-at {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.shortened-url a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.shortened-url a:hover {
+  text-decoration: underline;
+}
+
+.url-item:last-child {
+  margin-bottom: 0;
 }
 </style>
