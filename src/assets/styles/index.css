@@ -126,14 +126,6 @@ nav .menu-icon,
 nav input {
   display: none;
 }
-.menu-icon:before {
-  /* content: ""; */
-  display: flex;
-  width: 1.5rem;
-  height: 0.125rem;
-  background-color: #4991ff;
-  margin-bottom: 0.25rem;
-}
 
 .menu-icon .icon-bar {
   display: block;
