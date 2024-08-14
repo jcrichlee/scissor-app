@@ -7,8 +7,8 @@
           <div class="select-container">
             <select id="custom-select" class="custom-select" v-model="selectedDomain">
               <option value="" disabled selected>Choose Domain</option>
-              <option value="bitly">Bit.ly</option>
               <option value="tinyurl">TinyURL</option>
+              <option value="bitly">Bit.ly</option>
               <option value="rebrandly">Rebrandly</option>
             </select>
           </div>
