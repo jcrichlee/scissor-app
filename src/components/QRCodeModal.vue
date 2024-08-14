@@ -34,15 +34,23 @@ const downloadQRCode = () => {
 
 const canShare = navigator.share !== undefined;
 
-const shareQRCode = () => {
+const shareQRCode = async () => {
   if (canShare) {
-    navigator
-      .share({
-        title: "QR Code",
-        text: "Here's a QR code.",
+    try {
+      const response = await fetch(props.qrCode);
+      const blob = await response.blob();
+      const file = new File([blob], `${props.alias || "qr-code"}.png`, { type: "image/png" });
+
+      await navigator.share({
+        title: `${props.alias || "QR Code"}`,
+        text: `Here's a QR code with to access my website: ${props.alias || "qr-code"}`,
         files: [new File([props.qrCode], `${props.alias || "qr-code"}.png`, { type: "image/png" })]
       })
-      .catch((error) => console.error("Error sharing QR code:", error));
+    } catch (error) {
+      console.error("Error sharing QR code:", error);
+    }
+  } else {
+    console.log("Web Share API is not supported in this browser.");
   }
 };
 </script>
