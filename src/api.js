@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Bitly API
 export async function shortenWithBitly(longUrl) {
-  const bitlyAccessToken = "5fed807b85e947349cf40d44ad5c42d86f511378";
+  const bitlyAccessToken = "eb6d3720b3e2a909412e79aa633f5851f4ba3e64";
   const bitlyApiUrl = "https://api-ssl.bitly.com/v4/shorten";
   try {
     const response = await axios.post(

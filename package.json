@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "axios": "^1.7.4",
+    "dotenv": "^16.4.5",
     "firebase": "^10.12.5",
+    "firebase-admin": "^12.3.1",
+    "googleapis": "^140.0.1",
     "qrcode": "^1.5.4",
     "vue": "^3.4.37",
     "vue-router": "^4.3.3",
