@@ -5,7 +5,7 @@ import { getAnalytics, setUserId } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCdo5Evk1Cq-ad8CTgBeSLAod3t5XybrZg",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "scissorswa.firebaseapp.com",
   projectId: "scissorswa",
   storageBucket: "scissorswa.appspot.com",
