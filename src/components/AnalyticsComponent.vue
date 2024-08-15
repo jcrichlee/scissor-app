@@ -7,8 +7,8 @@
           <div class="select-container">
             <select id="custom-select" class="custom-select" v-model="selectedDomain">
               <option value="" disabled selected>Choose Domain</option>
-              <option value="tinyurl">TinyURL</option>
               <option value="bitly">Bit.ly</option>
+              <option value="tinyurl">TinyURL</option>
               <option value="rebrandly">Rebrandly</option>
             </select>
           </div>
@@ -35,27 +35,40 @@
         </p>
       </div>
     </div>
-    <QRCodeModal :qrCode="qrCode" :isVisible="isModalVisible" :alias="alias" @close="isModalVisible = false" />
+    <QRCodeModal
+      :qrCode="qrCode"
+      :isVisible="isModalVisible"
+      :alias="alias"
+      @close="isModalVisible = false"
+    />
   </section>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import QRCode from "qrcode";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import QRCodeModal from "./QRCodeModal.vue";
-import {
-  shortenWithBitly,
-  shortenWithTinyURL,
-  shortenWithRebrandly
-} from "@/api";
+import { shortenWithBitly, shortenWithTinyURL, shortenWithRebrandly } from "@/api";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "@/firebase";
 
-const url = ref("");
-const selectedDomain = ref("");
 const alias = ref("");
 const qrCode = ref("");
+const selectedDomain = ref("");
+const url = ref("");
 const isModalVisible = ref(false);
+
+const userId = inject('userId'); // Inject userId from global state
+
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
 
 const generateQRCode = async (url) => {
   try {
@@ -67,13 +80,18 @@ const generateQRCode = async (url) => {
   }
 };
 
-const storeURLInDatabase = async (shortenedURL, qrCode) => {
+const storeURLInDatabase = async (shortenedURL, qrCode, url, alias, selectedDomain, userId) => {
   try {
     const timestamp = Date.now();
+    const formattedDate = formatDate(timestamp);
     const docRef = await addDoc(collection(db, "urls"), {
-      shortenedURL,
+      alias,
+      createdAt: formattedDate,
       qrCode,
-      createdAt: timestamp
+      selectedDomain,
+      shortenedURL,
+      url,
+      userId
     });
     console.log("URL and QR code stored successfully with ID:", docRef.id);
   } catch (error) {
@@ -117,19 +135,26 @@ const trimURL = async () => {
     }
 
     await generateQRCode(shortenedURL);
-    await storeURLInDatabase(shortenedURL, qrCode.value);
+    await storeURLInDatabase(shortenedURL, qrCode.value, url.value, alias.value, selectedDomain.value, userId.value);
     copyToClipboard(shortenedURL);
     alert(`Shortened URL: ${shortenedURL} copied to clipboard.`);
+    logEvent(analytics, "url_created", {
+      shortenedURL: shortenedURL,
+      url: url.value,
+      alias: alias.value,
+      selectedDomain: selectedDomain.value,
+      timestamp: formatDate(Date.now())
+    });
   } catch (error) {
     console.error("Error shortening URL:", error);
     alert("Failed to shorten the URL. Please try again.");
+    logEvent(analytics, "url_creation_error", {
+      error: error.message,
+      timestamp: formatDate(Date.now())
+    });
   }
 };
 </script>
-
-<style scoped>
-/* Your styles here */
-</style>
 
 
 <style scoped>

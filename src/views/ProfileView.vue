@@ -1,83 +1,173 @@
 <template>
   <div class="user-profile-container">
+    <!-- User Profile and Tabs -->
     <div class="user-profile">
       <img :src="profilePicture" alt="profile" class="profile-picture" />
       <div class="user-details">
-        <h3>{{ fullName }}</h3>
         <p>
-          <em> ID: {{ userId }} </em>
+          <em>Welcome</em> <strong>{{ firstname }}</strong>
         </p>
+        <p>@{{ username }}</p>
+        <p>{{ email }}</p>
       </div>
-      <button @click="editProfile">Edit profile</button>
     </div>
     <div class="tabs">
-      <button :class="{ active: activeTab === 'general' }" @click="activeTab = 'general'">
-        General Information
-      </button>
       <button :class="{ active: activeTab === 'urls' }" @click="activeTab = 'urls'">
         Shortened URLs
       </button>
-      <button :class="{ active: activeTab === 'settings' }" @click="activeTab = 'settings'">
-        Settings
+      <button :class="{ active: activeTab === 'general' }" @click="activeTab = 'general'">
+        Account Information
       </button>
     </div>
     <div class="tab-content">
-      <div v-if="activeTab === 'general'">
-        <!-- General Information Content -->
-        <h4>General Information</h4>
-        <p><strong>Phone</strong>: {{ phoneNumber }}</p>
-        <p><strong>Email</strong>: {{ emailAddress }}</p>
-      </div>
+      <!-- Shortened URLs Content -->
       <div v-if="activeTab === 'urls'">
-        <!-- Shortened URLs Content -->
         <h4>Shortened URLs</h4>
         <div class="url-list-container" v-if="!loading">
-          <h2>Your Shortened URLs</h2>
           <ul class="url-list">
             <li v-for="url in urls" :key="url.id" class="url-item">
               <div class="url-info">
-                <p class="original-url"><strong>Original:</strong> {{ url.originalURL }}</p>
+                <p class="original-url"><strong>Original: </strong> {{ url.url }}</p>
+                <p class="my-alias"><strong>Alias: </strong> {{ url.alias }}</p>
+                <p class="my-selectedDomain">
+                  <strong>Selected Domain: </strong> {{ url.selectedDomain }}
+                </p>
                 <p class="shortened-url">
-                  <strong>Shortened:</strong>
+                  <strong>Shortened: </strong>
                   <a :href="url.shortenedURL" target="_blank">{{ url.shortenedURL }}</a>
                 </p>
+                <p class="clicks"><strong>Clicks:</strong> {{ url.clickCount || 0 }}</p>
                 <p class="created-at">
-                  <strong>Created At:</strong> {{ url.createdAt?.toDate().toLocaleString() }}
+                  <strong>Created:</strong> {{ formatCreatedAt(url.createdAt) }}
                 </p>
               </div>
             </li>
           </ul>
         </div>
-
+        <div v-else>
+          <p>Loading URLs...</p>
+        </div>
       </div>
-      <div v-if="activeTab === 'settings'">
-        <!-- Settings Content -->
-        <h4>Settings</h4>
-        <p>User settings...</p>
+      <!-- General Information Content -->
+      <div v-if="activeTab === 'general'">
+        <h4>Account Information</h4>
+        <p><strong>Email:</strong> {{ email }}</p>
+        <p><strong>Total Shortened URLs:</strong> {{ urlCount }}</p>
+        <p><strong>Total Clicks:</strong> {{ totalClicks }}</p>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import profilePicture from "@/assets/images/profile-picture.jpg";
+<script setup>
+import { ref, onMounted } from "vue";
+import { getDocs, collection, query, where } from "firebase/firestore";
+import { db } from "@/firebase";
+import { getAuth } from "firebase/auth"; // Import getAuth
 
-export default {
-  data() {
-    return {
-      profilePicture,
-      fullName: "Richard Adeyele",
-      phoneNumber: "123-456-7890",
-      emailAddress: "johndoe@example.com",
-      userId: "24462843",
-      activeTab: "general"
-    }
-  },
-  methods: {
-    editProfile() {}
+const generateAvatarUrl = (email) => {
+  // Use the email as the seed for RoboHash
+  return `https://robohash.org/${encodeURIComponent(email)}?size=100x100`;
+};
+
+const profilePicture = ref(generateAvatarUrl(""));
+
+const email = ref("");
+const firstname = ref("");
+const username = ref("");
+const userId = ref(""); // Set userId to the actual user ID
+const activeTab = ref("urls");
+const urls = ref([]);
+const loading = ref(true);
+const urlCount = ref(0);
+const totalClicks = ref(0);
+
+const auth = getAuth(); // Initialize auth
+
+// Format the createdAt value to a readable string
+const formatCreatedAt = (createdAt) => {
+  if (!createdAt) return "Unknown";
+  if (createdAt.toDate) {
+    return createdAt.toDate().toLocaleString(); // Firebase Timestamp
   }
-}
+  if (createdAt instanceof Date) {
+    return createdAt.toLocaleString(); // JavaScript Date object
+  }
+  return createdAt; // Default case, assume it's a string or already in a readable format
+};
+
+// Fetch user data from Firestore using userId
+const fetchUserData = async () => {
+  if (!userId.value) return; // Exit if no userId
+
+  try {
+    const userRef = collection(db, "users");
+    const q = query(userRef, where("userId", "==", userId.value));
+    const userSnapshot = await getDocs(q);
+    const userData = userSnapshot.docs
+      .map((doc) => doc.data())
+      .find((user) => user.userId === userId.value);
+
+    if (userData) {
+      console.log("Fetched user data:", userData); // Debug log
+      firstname.value = userData.firstname || "No name available"; // Default value for debugging
+      username.value = userData.username || "No username available"; // Default value for debugging
+      email.value = userData.email || "No email available"; // Default value for debugging
+      profilePicture.value = generateAvatarUrl(email.value); // Generate avatar based on email
+      urlCount.value = userData.urlCount || 0;
+      totalClicks.value = userData.totalClicks || 0;
+    } else {
+      console.log("No user data found for userId:", userId.value);
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+
+// Fetch user URLs from Firestore using userId
+const fetchUserUrls = async () => {
+  if (!userId.value) return; // Exit if no userId
+
+  try {
+    const urlsRef = collection(db, "urls");
+    const q = query(urlsRef, where("userId", "==", userId.value));
+    const urlsSnapshot = await getDocs(q);
+    urls.value = urlsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    console.log("Fetched URLs:", urls.value); // Debug log
+  } catch (error) {
+    console.error("Error fetching URLs:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Check Firebase auth state and fetch user data and URLs
+onMounted(() => {
+  const unsubscribe = auth.onAuthStateChanged((user) => {
+    if (user) {
+      email.value = user.email; // Set the email when user is authenticated
+      userId.value = user.uid; // Set userId to the actual user ID
+      console.log("Authenticated user email:", email.value); // Debug log
+      console.log("Authenticated user ID:", userId.value); // Debug log
+      fetchUserData();
+      fetchUserUrls();
+    } else {
+      // Handle case where no user is signed in
+      console.log("No user is signed in.");
+    }
+  });
+
+  // Cleanup the subscription when the component is unmounted
+  return () => unsubscribe();
+});
 </script>
+
+<style scoped>
+/* Your existing styles */
+</style>
+
+
+
 
 <style scoped>
 .user-profile-container {
@@ -167,15 +257,6 @@ button {
   background-color: #fff;
 }
 
-.url-list-container {
-  width: 96vw;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 h2 {
   margin-bottom: 20px;
   color: #333;
@@ -184,17 +265,19 @@ h2 {
 }
 
 .url-list {
+  display: flex;
   list-style-type: none;
+  gap: 8px;
   padding: 0;
+  flex-direction: column;
 }
 
 .url-item {
   padding: 15px;
-  margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
 }
 
 .url-info {
@@ -204,8 +287,8 @@ h2 {
 
 .original-url,
 .shortened-url,
+.alias,
 .created-at {
-  margin-bottom: 8px;
   font-size: 16px;
 }
 
@@ -218,7 +301,7 @@ h2 {
   text-decoration: underline;
 }
 
-.url-item:last-child {
-  margin-bottom: 0;
+.original-url {
+  word-wrap: break-word;
 }
 </style>

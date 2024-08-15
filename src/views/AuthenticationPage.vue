@@ -4,7 +4,8 @@
     <input v-model="user.email" type="email" placeholder="Email" class="auth-input" />
     <input v-model="user.password" type="password" placeholder="Password" class="auth-input" />
     <input v-model="user.username" type="username" placeholder="Username" class="auth-input" />
-    <input v-model="user.firstName" type="firstName" placeholder="Firstname" class="auth-input" />
+    <input v-model="user.firstname" type="firstName" placeholder="Firstname" class="auth-input" />
+    <input v-model="user.lastname" type="firstName" placeholder="Lastname" class="auth-input" />
     <div class="button-container">
       <button @click="signUp" class="auth-button">Sign Up</button>
       <button @click="signIn" class="auth-button secondary">Sign In</button>
@@ -13,62 +14,62 @@
 </template>
 
 <script setup>
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "@/firebase"
-import { doc, setDoc } from "firebase/firestore"
-import { reactive } from "vue"
-import { db } from "@/firebase"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { reactive } from 'vue';
 
 const user = reactive({
   email: "",
+  firstname: "",
+  lastname: "",
   password: "",
-  username: "",
-  firstName: ""
-})
+  userId: "",
+  username: ""
+});
 
 const createUser = async (userId) => {
   try {
-    const auth = getAuth() // Initialize the Auth instance
     const documentRef = doc(db, "users", userId);
-
     await setDoc(documentRef, {
       email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
       password: user.password,
-      firstName: user.firstName,
+      userId: user.userId,
       username: user.username
     });
-
-    console.log("User created with ID:", userId)
+    console.log("User created with ID:", userId);
   } catch (error) {
-    console.log("Error creating user:", error.message)
+    console.log("Error creating user:", error.message);
   }
-}
+};
 
 const signUp = async () => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password)
+    const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password);
     console.log("User signed up:", userCredential);
 
-    if (userCredential) {
-      await createUser(userCredential.user.uid);
-    }
-
-    console.log("User signed up:", userCredential.user)
+    user.userId = userCredential.user.uid;
+    await createUser(user.userId);
   } catch (error) {
-    console.log("Error signing up:", error.message)
+    console.error("Error signing up:", error.message);
   }
-}
+};
 
 const signIn = async () => {
   try {
-    const auth = getAuth() // Initialize the Auth instance
-    const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password)
-    console.log("User signed in:", userCredential.user)
+    const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
+    console.log("User signed in:", userCredential.user);
+
+    user.userId = userCredential.user.uid;
   } catch (error) {
-    console.log("Error signing in:", error.message)
+    console.log("Error signing in:", error.message);
   }
-}
+};
 </script>
+
+
 
 <style scoped>
 .auth-container {

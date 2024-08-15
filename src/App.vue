@@ -1,6 +1,27 @@
 <script setup>
 import { RouterView } from "vue-router";
 import PreloaderComponent from "./components/PreloaderComponent.vue";
+import { ref, provide } from "vue";
+import { auth } from "@/firebase"; // Ensure you import necessary Firebase functions
+
+const userId = ref(""); // Define userId 
+
+// Provide userId to the entire app
+provide('userId', userId);
+
+// Function to update userId when user signs in or signs up
+const updateUserId = (id) => {
+  userId.value = id;
+};
+
+// Listen for authentication state changes
+auth.onAuthStateChanged(user => {
+  if (user) {
+    updateUserId(user.uid);
+  } else {
+    updateUserId("");
+  }
+});
 </script>
 
 <template>
