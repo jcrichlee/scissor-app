@@ -1,7 +1,7 @@
 <template>
   <div class="user-profile-container">
     <!-- User Profile and Tabs -->
-    <div class="user-profile">
+    <div class="user-profile" v-if="signedIn">
       <img :src="profilePicture" alt="profile" class="profile-picture" />
       <div class="user-details">
         <p>
@@ -11,7 +11,8 @@
         <p>{{ email }}</p>
       </div>
     </div>
-    <div class="tabs">
+
+    <div v-if="signedIn" class="tabs">
       <button :class="{ active: activeTab === 'urls' }" @click="activeTab = 'urls'">
         Shortened URLs
       </button>
@@ -19,11 +20,12 @@
         Account Information
       </button>
     </div>
+
     <div class="tab-content">
       <!-- Shortened URLs Content -->
-      <div v-if="activeTab === 'urls'">
+      <div v-if="signedIn && activeTab === 'urls'">
         <h4>Shortened URLs</h4>
-        <div class="url-list-container" v-if="!loading">
+        <div class="url-list-container">
           <ul class="url-list">
             <li v-for="url in urls" :key="url.id" class="url-item">
               <div class="url-info">
@@ -44,20 +46,24 @@
             </li>
           </ul>
         </div>
-        <div v-else>
-          <p>Loading URLs...</p>
-        </div>
       </div>
+
       <!-- General Information Content -->
-      <div v-if="activeTab === 'general'">
+      <div v-if="signedIn && activeTab === 'general'">
         <h4>Account Information</h4>
         <p><strong>Email:</strong> {{ email }}</p>
         <p><strong>Total Shortened URLs:</strong> {{ urlCount }}</p>
         <p><strong>Total Clicks:</strong> {{ totalClicks }}</p>
       </div>
     </div>
+
+    <!-- Message for users not signed in -->
+    <div v-if="!signedIn" class="not-signed-in-message">
+      <h4>Please sign in to view your created URLs.</h4>
+    </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -81,6 +87,7 @@ const urls = ref([]);
 const loading = ref(true);
 const urlCount = ref(0);
 const totalClicks = ref(0);
+const signedIn = ref(false);
 
 const auth = getAuth(); // Initialize auth
 
@@ -133,7 +140,7 @@ const fetchUserUrls = async () => {
     const q = query(urlsRef, where("userId", "==", userId.value));
     const urlsSnapshot = await getDocs(q);
     urls.value = urlsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    console.log("Fetched URLs:", urls.value); // Debug log
+    console.log("Fetched URLs:", urls.value);
   } catch (error) {
     console.error("Error fetching URLs:", error);
   } finally {
@@ -145,25 +152,23 @@ const fetchUserUrls = async () => {
 onMounted(() => {
   const unsubscribe = auth.onAuthStateChanged((user) => {
     if (user) {
-      email.value = user.email; // Set the email when user is authenticated
-      userId.value = user.uid; // Set userId to the actual user ID
-      console.log("Authenticated user email:", email.value); // Debug log
-      console.log("Authenticated user ID:", userId.value); // Debug log
+      email.value = user.email;
+      userId.value = user.uid;
+      signedIn.value = true;
+      console.log("Authenticated user email:", email.value);
+      console.log("Authenticated user ID:", userId.value);
       fetchUserData();
       fetchUserUrls();
     } else {
-      // Handle case where no user is signed in
+      signedIn.value = false;
       console.log("No user is signed in.");
     }
   });
-
-  // Cleanup the subscription when the component is unmounted
   return () => unsubscribe();
 });
 </script>
 
 <style scoped>
-/* Your existing styles */
 </style>
 
 

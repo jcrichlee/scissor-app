@@ -14,17 +14,15 @@
 </template>
 
 <script setup>
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
-import { reactive } from 'vue';
+import { reactive } from "vue";
+import { useStore } from "vuex";
 
+const store = useStore();
 const user = reactive({
   email: "",
   firstname: "",
   lastname: "",
   password: "",
-  userId: "",
   username: ""
 });
 
@@ -47,11 +45,7 @@ const createUser = async (userId) => {
 
 const signUp = async () => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password);
-    console.log("User signed up:", userCredential);
-
-    user.userId = userCredential.user.uid;
-    await createUser(user.userId);
+    await store.dispatch("signUp", user);
   } catch (error) {
     console.error("Error signing up:", error.message);
   }
@@ -59,17 +53,12 @@ const signUp = async () => {
 
 const signIn = async () => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
-    console.log("User signed in:", userCredential.user);
-
-    user.userId = userCredential.user.uid;
+    await store.dispatch("signIn", user);
   } catch (error) {
     console.log("Error signing in:", error.message);
   }
 };
 </script>
-
-
 
 <style scoped>
 .auth-container {

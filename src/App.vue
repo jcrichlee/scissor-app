@@ -1,21 +1,43 @@
 <script setup>
 import { RouterView } from "vue-router";
+import { useStore } from "vuex";
 import PreloaderComponent from "./components/PreloaderComponent.vue";
-import { ref, provide } from "vue";
-import { auth } from "@/firebase"; // Ensure you import necessary Firebase functions
+import { ref, provide, onMounted, computed } from "vue";
+import { auth } from "@/firebase";
+import { signOut as firebaseSignOut } from "firebase/auth";
+import { useRouter } from "vue-router";
 
-const userId = ref(""); // Define userId 
+const router = useRouter();
+const store = useStore();
+const userId = ref("");
+
+// Fetch initial authnentication state on mount
+onMounted(() => {
+  store.dispatch("initAuth");
+});
+
+const isAuthenticated = computed(() => store.getters.isAuthenticated); // Check if user is authenticated
 
 // Provide userId to the entire app
-provide('userId', userId);
+provide("userId", userId);
 
 // Function to update userId when user signs in or signs up
 const updateUserId = (id) => {
   userId.value = id;
 };
 
+// Function to handle user sign-out and redirect
+const signOut = async () => {
+  try {
+    await firebaseSignOut(auth); // Sign out user
+    router.push("/auth"); // Redirect to /auth page
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
+};
+
 // Listen for authentication state changes
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged((user) => {
   if (user) {
     updateUserId(user.uid);
   } else {
@@ -44,8 +66,15 @@ auth.onAuthStateChanged(user => {
         <li><a href="">FAQs</a></li>
       </ul>
       <div class="cta">
-        <a href="/auth" class="secondary">Login</a>
-        <a href="/auth" class="primary">Try for free</a>
+        <template v-if="isAuthenticated">
+          <div>
+            <a @click.prevent="signOut" class="primary">Logout</a>
+          </div>
+        </template>
+        <template v-else>
+          <a href="/auth" class="secondary">Login</a>
+          <a href="/auth" class="primary">Try for free</a>
+        </template>
       </div>
     </nav>
   </header>
@@ -169,7 +198,5 @@ nav ul.menu li {
     flex-direction: column;
     align-items: flex-start;
   }
-
-
 }
 </style>
