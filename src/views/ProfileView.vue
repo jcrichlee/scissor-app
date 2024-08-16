@@ -67,64 +67,63 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
-import { getAuth } from "firebase/auth"; // Import getAuth
+import { getAuth } from "firebase/auth";
 
+// Helper function to generate a RoboHash avatar based on the user's email
 const generateAvatarUrl = (email) => {
-  // Use the email as the seed for RoboHash
   return `https://robohash.org/${encodeURIComponent(email)}?size=100x100`;
 };
 
-const profilePicture = ref(generateAvatarUrl(""));
-
+// Reactive references for storing user data and state
+const profilePicture = ref("");
 const email = ref("");
 const firstname = ref("");
 const lastname = ref("");
 const username = ref("");
-const userId = ref(""); // Set userId to the actual user ID
-const activeTab = ref("urls");
+const userId = ref(""); // To store the actual user ID
+const activeTab = ref("urls"); // Default tab
 const urls = ref([]);
-const loading = ref(true);
 const urlCount = ref(0);
 const totalClicks = ref(0);
-const signedIn = ref(false);
+const signedIn = ref(false); // Track if the user is signed in
 
-const auth = getAuth(); // Initialize auth
+// Firebase Auth initialization
+const auth = getAuth();
 
-// Format the createdAt value to a readable string
+// Function to format the createdAt timestamp to a readable string
 const formatCreatedAt = (createdAt) => {
   if (!createdAt) return "Unknown";
   if (createdAt.toDate) {
-    return createdAt.toDate().toLocaleString(); // Firebase Timestamp
+    return createdAt.toDate().toLocaleString(); // For Firebase Timestamp
   }
   if (createdAt instanceof Date) {
-    return createdAt.toLocaleString(); // JavaScript Date object
+    return createdAt.toLocaleString(); // For JavaScript Date object
   }
-  return createdAt; // Default case, assume it's a string or already in a readable format
+  return createdAt; // Default case, assuming it's already a string
 };
 
-// Fetch user data from Firestore using userId
+// Function to fetch user data from Firestore using the userId
 const fetchUserData = async () => {
   if (!userId.value) return; // Exit if no userId
 
   try {
-    const userRef = collection(db, "users");
-    const q = query(userRef, where("userId", "==", userId.value));
-    const userSnapshot = await getDocs(q);
-    const userData = userSnapshot.docs
-      .map((doc) => doc.data())
-      .find((user) => user.userId === userId.value);
+    const userRef = doc(db, "users", userId.value); // Use userId.value to get the document reference
+    const userSnapshot = await getDoc(userRef);
 
-    if (userData) {
-      console.log("Fetched user data:", userData); // Debug log
-      firstname.value = userData.firstname || "No name available"; // Default value for debugging
-      username.value = userData.username || "No username available"; // Default value for debugging
-      email.value = userData.email || "No email available"; // Default value for debugging
-      profilePicture.value = generateAvatarUrl(email.value); // Generate avatar based on email
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      console.log("Fetched user data:", userData);
+
+      // Update the reactive references with the fetched user data
+      firstname.value = userData.firstname || "No name available";
+      username.value = userData.username || "No username available";
+      email.value = userData.email || "No email available";
+      profilePicture.value = generateAvatarUrl(email.value);
       urlCount.value = userData.urlCount || 0;
       totalClicks.value = userData.totalClicks || 0;
-      lastname.value = userData.lastname;
+      lastname.value = userData.lastname || "No lastname available";
     } else {
       console.log("No user data found for userId:", userId.value);
     }
@@ -133,27 +132,28 @@ const fetchUserData = async () => {
   }
 };
 
-// Fetch user URLs from Firestore using userId
+// Function to fetch user's shortened URLs from Firestore using the userId
 const fetchUserUrls = async () => {
   if (!userId.value) return; // Exit if no userId
 
   try {
-    const urlsRef = collection(db, "urls");
-    const q = query(urlsRef, where("userId", "==", userId.value));
-    const urlsSnapshot = await getDocs(q);
-    urls.value = urlsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    
-    urlCount.value = urls.value.length;
-    
-    console.log("Fetched URLs:", urls.value);
+    const urlRef = collection(db, "shortenedUrls");
+    const q = query(urlRef, where("userId", "==", userId.value)); // Use userId.value in query
+    const querySnapshot = await getDocs(q);
+
+    const fetchedUrls = [];
+    querySnapshot.forEach((doc) => {
+      fetchedUrls.push({ id: doc.id, ...doc.data() });
+    });
+
+    urls.value = fetchedUrls; // Update the reactive urls array with the fetched data
+    console.log("Fetched URLs:", fetchedUrls);
   } catch (error) {
-    console.error("Error fetching URLs:", error);
-  } finally {
-    loading.value = false;
+    console.error("Error fetching URLs:", error.message);
   }
 };
 
-// Check Firebase auth state and fetch user data and URLs
+// Check Firebase auth state on component mount and fetch data accordingly
 onMounted(() => {
   const unsubscribe = auth.onAuthStateChanged((user) => {
     if (user) {
@@ -162,8 +162,8 @@ onMounted(() => {
       signedIn.value = true;
       console.log("Authenticated user email:", email.value);
       console.log("Authenticated user ID:", userId.value);
-      fetchUserData();
-      fetchUserUrls();
+      fetchUserData(); // Fetch user data after auth state is confirmed
+      fetchUserUrls(); // Fetch URLs after auth state is confirmed
     } else {
       signedIn.value = false;
       console.log("No user is signed in.");
@@ -172,8 +172,6 @@ onMounted(() => {
   return () => unsubscribe();
 });
 </script>
-
-<style scoped></style>
 
 <style scoped>
 .user-profile-container {

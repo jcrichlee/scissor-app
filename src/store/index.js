@@ -159,11 +159,16 @@ export default createStore({
           firstname: user.firstname,
           lastname: user.lastname,
           username: user.username,
-          profilePicture: user.profilePicture || "./default-profile-pic.png" // Placeholder
+          profilePicture: user.profilePicture || "./default-profile-pic.png",
+          userId: userCredential.user.uid
         };
-        console.log("Action: signUp - User signed up successfully");
+    
+        // Save user data to Firestore
         await setDoc(doc(db, "users", userCredential.user.uid), userProfile);
+        
+        // Commit the user profile to Vuex store
         commit("setUser", userProfile);
+        console.log("Action: signUp - User signed up successfully");
       } catch (error) {
         console.error("Action: signUp - Error signing up", error.message);
       }
@@ -173,19 +178,16 @@ export default createStore({
       try {
         const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
         const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
-        const userProfile = docSnap.data();
-        console.log("Action: signIn - User signed in successfully");
-        commit("setUser", userProfile);
+        
+        if (docSnap.exists()) {
+          const userProfile = docSnap.data();
+          commit("setUser", userProfile);
+          console.log("Action: signIn - User signed in successfully");
+        } else {
+          console.log("Action: signIn - No user data found for userId:", userCredential.user.uid);
+        }
       } catch (error) {
         console.error("Action: signIn - Error signing in", error.message);
-      }
-    },
-    async signOut({ commit }) {
-      try {
-        await signOut(auth);
-        commit('clearUser');
-      } catch (error) {
-        console.error('Error signing out:', error.message);
       }
     },
     initAuth({ commit }) {
