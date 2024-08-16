@@ -152,6 +152,7 @@ const fetchUserUrls = async () => {
     });
 
     urls.value = fetchedUrls;
+    urlCount.value = fetchedUrls.length;
     console.log("Fetched URLs:", fetchedUrls);
   } catch (error) {
     console.error("Error fetching URLs:", error.message);
