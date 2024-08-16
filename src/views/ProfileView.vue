@@ -51,7 +51,9 @@
       <!-- General Information Content -->
       <div v-if="signedIn && activeTab === 'general'">
         <h4>Account Information</h4>
-        <p><strong>Full Name:</strong> {{ firstname }} <strong>{{ lastname }}</strong></p>
+        <p>
+          <strong>Full Name:</strong> {{ firstname }} <strong>{{ lastname }}</strong>
+        </p>
         <p><strong>Email:</strong> {{ email }}</p>
         <p><strong>Total Shortened URLs:</strong> {{ urlCount }}</p>
         <p><strong>Total Clicks:</strong> {{ totalClicks }}</p>
@@ -134,11 +136,14 @@ const fetchUserData = async () => {
 
 // Function to fetch user's shortened URLs from Firestore using the userId
 const fetchUserUrls = async () => {
-  if (!userId.value) return; // Exit if no userId
+  if (!userId.value) {
+    console.log("No userId available.");
+    return; // Exit if no userId
+  }
 
   try {
-    const urlRef = collection(db, "shortenedUrls");
-    const q = query(urlRef, where("userId", "==", userId.value)); // Use userId.value in query
+    const urlRef = collection(db, "urls");
+    const q = query(urlRef, where("userId", "==", userId.value));
     const querySnapshot = await getDocs(q);
 
     const fetchedUrls = [];
@@ -146,7 +151,7 @@ const fetchUserUrls = async () => {
       fetchedUrls.push({ id: doc.id, ...doc.data() });
     });
 
-    urls.value = fetchedUrls; // Update the reactive urls array with the fetched data
+    urls.value = fetchedUrls;
     console.log("Fetched URLs:", fetchedUrls);
   } catch (error) {
     console.error("Error fetching URLs:", error.message);
