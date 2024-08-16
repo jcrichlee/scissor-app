@@ -151,7 +151,7 @@ export default createStore({
   },
   actions: {
     async signUp({ commit }, user) {
-      console.log("Action: signUp - Attempting to sign up user", user);
+      console.log("Action: signUp - Attempting to sign up user");
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password);
         const userProfile = {
@@ -161,7 +161,7 @@ export default createStore({
           username: user.username,
           profilePicture: user.profilePicture || "./default-profile-pic.png" // Placeholder
         };
-        console.log("Action: signUp - User signed up successfully", userCredential);
+        console.log("Action: signUp - User signed up successfully");
         await setDoc(doc(db, "users", userCredential.user.uid), userProfile);
         commit("setUser", userProfile);
       } catch (error) {
@@ -169,12 +169,12 @@ export default createStore({
       }
     },
     async signIn({ commit }, user) {
-      console.log("Action: signIn - Attempting to sign in user", user);
+      console.log("Action: signIn - Attempting to sign in user");
       try {
         const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
         const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
         const userProfile = docSnap.data();
-        console.log("Action: signIn - User signed in successfully", userCredential);
+        console.log("Action: signIn - User signed in successfully");
         commit("setUser", userProfile);
       } catch (error) {
         console.error("Action: signIn - Error signing in", error.message);

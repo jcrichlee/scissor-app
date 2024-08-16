@@ -51,6 +51,7 @@
       <!-- General Information Content -->
       <div v-if="signedIn && activeTab === 'general'">
         <h4>Account Information</h4>
+        <p><strong>Full Name:</strong> {{ firstname }} <strong>{{ lastname }}</strong></p>
         <p><strong>Email:</strong> {{ email }}</p>
         <p><strong>Total Shortened URLs:</strong> {{ urlCount }}</p>
         <p><strong>Total Clicks:</strong> {{ totalClicks }}</p>
@@ -63,7 +64,6 @@
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -80,6 +80,7 @@ const profilePicture = ref(generateAvatarUrl(""));
 
 const email = ref("");
 const firstname = ref("");
+const lastname = ref("");
 const username = ref("");
 const userId = ref(""); // Set userId to the actual user ID
 const activeTab = ref("urls");
@@ -123,6 +124,7 @@ const fetchUserData = async () => {
       profilePicture.value = generateAvatarUrl(email.value); // Generate avatar based on email
       urlCount.value = userData.urlCount || 0;
       totalClicks.value = userData.totalClicks || 0;
+      lastname.value = userData.lastname;
     } else {
       console.log("No user data found for userId:", userId.value);
     }
@@ -140,6 +142,9 @@ const fetchUserUrls = async () => {
     const q = query(urlsRef, where("userId", "==", userId.value));
     const urlsSnapshot = await getDocs(q);
     urls.value = urlsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    
+    urlCount.value = urls.value.length;
+    
     console.log("Fetched URLs:", urls.value);
   } catch (error) {
     console.error("Error fetching URLs:", error);
@@ -168,11 +173,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-</style>
-
-
-
+<style scoped></style>
 
 <style scoped>
 .user-profile-container {

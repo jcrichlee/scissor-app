@@ -1,23 +1,38 @@
 <template>
   <div class="auth-container">
-    <h2>Sign Up / Sign In</h2>
-    <input v-model="user.email" type="email" placeholder="Email" class="auth-input" />
-    <input v-model="user.password" type="password" placeholder="Password" class="auth-input" />
-    <input v-model="user.username" type="username" placeholder="Username" class="auth-input" />
-    <input v-model="user.firstname" type="firstName" placeholder="Firstname" class="auth-input" />
-    <input v-model="user.lastname" type="firstName" placeholder="Lastname" class="auth-input" />
-    <div class="button-container">
+    <h2>{{ view === "signup" ? "Sign Up" : "Sign In" }}</h2>
+
+    <div v-if="view === 'signup'">
+      <input v-model="user.email" type="email" placeholder="Email" class="auth-input" />
+      <input v-model="user.password" type="password" placeholder="Password" class="auth-input" />
+      <input v-model="user.username" type="username" placeholder="Username" class="auth-input" />
+      <input v-model="user.firstname" type="firstName" placeholder="Firstname" class="auth-input" />
+      <input v-model="user.lastname" type="firstName" placeholder="Lastname" class="auth-input" />
       <button @click="signUp" class="auth-button">Sign Up</button>
-      <button @click="signIn" class="auth-button secondary">Sign In</button>
+    </div>
+
+    <div v-else>
+      <input v-model="user.email" type="email" placeholder="Email" class="auth-input" />
+      <input v-model="user.password" type="password" placeholder="Password" class="auth-input" />
+      <button @click="signIn" class="auth-button">Sign In</button>
+    </div>
+
+    <div class="button-container">
+      <button @click="toggleView" class="auth-secondary">
+        {{ view === "signup" ? "Switch to Sign In" : "Switch to Sign Up" }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 const store = useStore();
+const router = useRouter(); // Initialize router
+const view = ref("signup"); // Initialize with 'signup' view
 const user = reactive({
   email: "",
   firstname: "",
@@ -26,26 +41,14 @@ const user = reactive({
   username: ""
 });
 
-const createUser = async (userId) => {
-  try {
-    const documentRef = doc(db, "users", userId);
-    await setDoc(documentRef, {
-      email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      password: user.password,
-      userId: user.userId,
-      username: user.username
-    });
-    console.log("User created with ID:", userId);
-  } catch (error) {
-    console.log("Error creating user:", error.message);
-  }
+const toggleView = () => {
+  view.value = view.value === "signup" ? "signin" : "signup";
 };
 
 const signUp = async () => {
   try {
     await store.dispatch("signUp", user);
+    router.push("/profile"); // Redirect to /profile on successful sign-up
   } catch (error) {
     console.error("Error signing up:", error.message);
   }
@@ -54,6 +57,7 @@ const signUp = async () => {
 const signIn = async () => {
   try {
     await store.dispatch("signIn", user);
+    router.push("/profile"); // Redirect to /profile on successful sign-in
   } catch (error) {
     console.log("Error signing in:", error.message);
   }
@@ -65,10 +69,8 @@ const signIn = async () => {
   max-width: 400px;
   margin: 50px auto;
   padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid #b4d8ffb0;
   border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   margin-top: 96px;
 }
@@ -97,7 +99,7 @@ h2 {
 
 .button-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .auth-button {
@@ -116,8 +118,15 @@ h2 {
   background-color: #0056b3;
 }
 
-.auth-button.secondary {
-  background-color: #6c757d;
+.auth-secondary {
+  width: 48%;
+  border: none;
+  color: #007bff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 24px;
+  height: 40px;
 }
 
 .auth-button.secondary:hover {
