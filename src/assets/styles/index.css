@@ -1611,7 +1611,6 @@ footer .links a:after {
     text-align: center;
   }
   footer {
-    padding: 0;
     flex-direction: column;
     padding-left: 3rem;
     padding-right: 3rem;
