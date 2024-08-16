@@ -1,5 +1,3 @@
-# semester-three-project
-
 # Scissor - URL Shortening Service
 
 ## Project Overview
@@ -18,34 +16,38 @@
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
+- [Code Snippets](#code-snippets)
+- [Challenging Issues and Solutions](#challenging-issues-and-solutions)
 
 ## Installation
 
 To set up the project locally, follow these steps:
 
 1. **Clone the repository:**
-```
-   git clone https://github.com/jcrichlee/scissor-app.git
-```
+    ```bash
+    git clone https://github.com/jcrichlee/scissor-app.git
+    ```
+
 2. **Navigate to the project directory:**
-```
-   cd scissor-app
-```
+    ```bash
+    cd scissor-app
+    ```
 
 3. **Install dependencies:**
-```
-   npm install
-```
+    ```bash
+    npm install
+    ```
 
 4. **Run the development server:**
-```
-   npm run serve
-```
+    ```bash
+    npm run serve
+    ```
 
 5. **Build for production:**
-```
-   npm run build
-```
+    ```bash
+    npm run build
+    ```
+
 ## Project Structure
 
 The project is organized as follows:
@@ -76,7 +78,7 @@ The `Footer.vue` component serves as the footer for the application, providing s
 
 **Example of the Footer Template:**
 
-```
+```vue
 <template>
   <footer class="footer">
     <section class="footerLeft">
@@ -107,7 +109,7 @@ The `ScrollToTopButton.vue` is a simple component that enhances user experience 
 
 **Example of the ScrollToTopButton Template:**
 
-```
+```vue
 <template>
   <button @click="scrollToTop" class="scrollToTop" aria-label="Scroll to top">
     &#8593;
@@ -132,7 +134,7 @@ The project uses Vuex for state management, centralizing data flow across the ap
 
 **Example of the State:**
 
-```
+```javascript
 state: {
   faqs: [
     {
@@ -152,7 +154,7 @@ state: {
 
 **Example of a Getter:**
 
-```
+```javascript
 getters: {
   getFaqs: (state) => state.faqs,
 }
@@ -164,7 +166,7 @@ Global styles are handled in `main.js/@/assets/styles/index.css`, ensuring that 
 
 ### Example of a Global Style:
 
-```
+```css
 .scrollToTop {
   position: sticky;
   left: 96%;
@@ -203,3 +205,180 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 3. Commit your changes (`git commit -m 'Added some new features'`).
 4. Push to the branch (`git push origin feature/new-feature`).
 5. Open a pull request.
+
+## Code Snippets
+
+### Firebase Initialization
+
+In `firebase.js`:
+```javascript
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+export { db, auth };
+```
+
+### URL Shortening API Integration
+
+In `urlShortener.js`:
+```javascript
+import { ref } from "vue";
+import axios from "axios";
+
+const shortenedUrl = ref("");
+
+const shortenUrl = async (originalUrl, domain, alias) => {
+  try {
+    const response = await axios.post("https://api.example.com/shorten", {
+      originalUrl,
+      domain,
+      alias
+    });
+    shortenedUrl.value = response.data.shortenedUrl;
+  } catch (error) {
+    console.error("Error shortening URL:", error);
+  }
+};
+
+export { shortenedUrl, shortenUrl };
+```
+
+### User Profile Component
+
+In `ProfileView.vue`:
+```vue
+<template>
+  <div class="user-profile-container">
+    <!-- User Profile and Tabs -->
+    <div class="user-profile" v-if="signedIn">
+      <img :src="profilePicture" alt="profile" class="profile-picture" />
+      <div class="user-details">
+        <p><em>Welcome</em> <strong>{{ firstname }}</strong></p>
+        <p>@{{ username }}</p>
+        <p>{{ email }}</p>
+      </div>
+    </div>
+    <!-- ... other content ... -->
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import { getDocs, collection, query, where, doc, getDoc } from "firebase/firestore";
+import { db } from "@/firebase";
+import { getAuth } from "firebase/auth";
+
+const profilePicture = ref("");
+const email = ref("");
+const firstname = ref("");
+const lastname = ref("");
+const username = ref("");
+const userId = ref("");
+const active
+
+Tab = ref("urls");
+const urls = ref([]);
+const urlCount = ref(0);
+const totalClicks = ref(0);
+const signedIn = ref(false);
+
+const auth = getAuth();
+
+const fetchUserData = async () => {
+  if (!userId.value) return;
+  try {
+    const userRef = doc(db, "users", userId.value);
+    const userSnapshot = await getDoc(userRef);
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      firstname.value = userData.firstname || "No name available";
+      username.value = userData.username || "No username available";
+      email.value = userData.email || "No email available";
+      profilePicture.value = generateAvatarUrl(email.value);
+      urlCount.value = userData.urlCount || 0;
+      totalClicks.value = userData.totalClicks || 0;
+      lastname.value = userData.lastname || "No lastname available";
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+
+const fetchUserUrls = async () => {
+  if (!userId.value) return;
+  try {
+    const urlRef = collection(db, "shortenedUrls");
+    const q = query(urlRef, where("userId", "==", userId.value));
+    const querySnapshot = await getDocs(q);
+    const fetchedUrls = [];
+    querySnapshot.forEach((doc) => {
+      fetchedUrls.push({ id: doc.id, ...doc.data() });
+    });
+    urls.value = fetchedUrls;
+    urlCount.value = fetchedUrls.length;
+  } catch (error) {
+    console.error("Error fetching URLs:", error.message);
+  }
+};
+
+onMounted(() => {
+  const unsubscribe = auth.onAuthStateChanged((user) => {
+    if (user) {
+      email.value = user.email;
+      userId.value = user.uid;
+      signedIn.value = true;
+      fetchUserData();
+      fetchUserUrls();
+    } else {
+      signedIn.value = false;
+    }
+  });
+  return () => unsubscribe();
+});
+</script>
+```
+
+## Challenging Issues and Solutions
+
+### 1. **Handling Missing or Insufficient Permissions**
+
+**Issue:** Error fetching URLs due to missing or insufficient permissions.
+
+**Solution:** Updated Firestore security rules to allow authenticated users to read/write data. Ensured rules match user IDs in documents.
+
+### 2. **Automatic User ID Handling in Firestore**
+
+**Issue:** User ID was not automatically sent to Firestore upon signup.
+
+**Solution:** Setup a function to automatically set `userId` in Firestore after signup. Ensured `userId` was correctly scoped and saved in the database.
+
+### 3. **Displaying Shortened URLs**
+
+**Issue:** Shortened URLs were not displayed correctly on the frontend.
+
+**Solution:** Verified the fetching and binding of URLs to the component. Ensured that `urls` was updated reactively and displayed correctly in the template.
+
+### 4. **Ensuring QR Code Download**
+
+**Issue:** QR code generated was not properly downloaded with the alias as the file name.
+
+**Solution:** Implemented functionality to download QR code as PNG with alias using a client-side library, ensuring the file name matches the alias.
+
+## License
+
+[MIT License](LICENSE)
+```
