@@ -14,7 +14,7 @@
         <li><a href="#myurls">My URLs</a></li>
         <li><a href="#features">Features</a></li>
         <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#analytics">Analytics</a></li>
+        <li><a href="./#analytics">Analytics</a></li>
         <li><a href="#faqs">FAQs</a></li>
       </ul>
     </nav>
