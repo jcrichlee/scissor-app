@@ -47,6 +47,10 @@ To set up the project locally, follow these steps:
     ```bash
     npm run build
     ```
+6. **Run tests:**
+    ```bash
+    npx vitest
+    ```
 
 ## Project Structure
 
