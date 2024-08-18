@@ -59,11 +59,11 @@ auth.onAuthStateChanged((user) => {
       </a>
       <input type="checkbox" id="menu-toggle" />
       <ul class="menu">
-        <li><a href="/profile">My URLs</a></li>
-        <li><a href="">Features</a></li>
-        <li><a href="">Pricing</a></li>
-        <li><a href="">Analytics</a></li>
-        <li><a href="">FAQs</a></li>
+        <li><router-link :to="{path: '/profile', hash: '#'}">My URLs</router-link></li>
+        <li><router-link :to="{path: '/', hash: '#features'}">Features</router-link></li>
+        <li><router-link :to="{path: '/', hash: '#pricing'}">Pricing</router-link></li>
+        <li><router-link :to="{path: '/', hash: '#analytics'}">Analytics</router-link></li>
+        <li><router-link :to="{path: '/', hash: '#faqs'}">FAQs</router-link></li>
       </ul>
       <div class="cta">
         <template v-if="isAuthenticated">
