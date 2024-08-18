@@ -62,7 +62,7 @@
     </div>
     
     <router-link :to="{path: '/', hash: '#analytics'}">
-      <button class="primary">+ Shorten a new URL ✨</button>
+      <button v-if="signedIn" class="primary">+ Shorten a new URL ✨</button>
     </router-link>
 
     <!-- Message for users not signed in -->
