@@ -122,7 +122,7 @@ const fetchUserData = async () => {
 
     if (userSnapshot.exists()) {
       const userData = userSnapshot.data();
-      console.log("Fetched user data:", userData);
+      // console.log("Fetched user data:", userData);
 
       // Update the reactive references with the fetched user data
       firstname.value = userData.firstname || "No name available";
@@ -159,9 +159,9 @@ const fetchUserUrls = async () => {
 
     urls.value = fetchedUrls;
     urlCount.value = fetchedUrls.length;
-    console.log("Fetched URLs:", fetchedUrls);
+    // console.log("Fetched URLs:", fetchedUrls);
   } catch (error) {
-    console.error("Error fetching URLs:", error.message);
+    // console.error("Error fetching URLs:", error.message);
   }
 };
 
@@ -172,8 +172,8 @@ onMounted(() => {
       email.value = user.email;
       userId.value = user.uid;
       signedIn.value = true;
-      console.log("Authenticated user email:", email.value);
-      console.log("Authenticated user ID:", userId.value);
+      // console.log("Authenticated user email:", email.value);
+      // console.log("Authenticated user ID:", userId.value);
       fetchUserData(); // Fetch user data after auth state is confirmed
       fetchUserUrls(); // Fetch URLs after auth state is confirmed
     } else {
@@ -272,7 +272,7 @@ button.primary {
   background-color: #007bff1c;
   color: #007bff;
   border: none;
-  min-width: 96vw;
+  min-width: 88vw;
   height: 3.5rem;
 }
 
