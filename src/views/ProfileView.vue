@@ -60,6 +60,10 @@
         <p><strong>Total Clicks:</strong> {{ totalClicks }}</p>
       </div>
     </div>
+    
+    <router-link :to="{path: '/', hash: '#analytics'}">
+      <button class="primary">+ Shorten a new URL ✨</button>
+    </router-link>
 
     <!-- Message for users not signed in -->
     <div v-if="!signedIn" class="not-signed-in-message">
@@ -257,10 +261,19 @@ button {
   height: 100%;
 }
 
-.tabs button.active {
+.tabs button.active, button.primary {
   background-color: #007bff;
   color: #fff;
   border-radius: 800px;
+}
+
+button.primary {
+  margin-top: 40px;
+  background-color: #007bff1c;
+  color: #007bff;
+  border: none;
+  min-width: 96vw;
+  height: 3.5rem;
 }
 
 .tab-content {
