@@ -11,11 +11,11 @@
         <span class="icon-bar"></span>
       </label>
       <ul class="menu">
-        <li><a href="#myurls">My URLs</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="./#analytics">Analytics</a></li>
-        <li><a href="#faqs">FAQs</a></li>
+        <li><router-link to="{path: '/profile', hash: '#'}">My URLs</router-link></li>
+        <li><router-link to="{path: '/', hash: '#features'}">Features</router-link></li>
+        <li><router-link to="{path: '/', hash: '#pricing'}">Pricing</router-link></li>
+        <li><router-link to="{path: '/', hash: '#analytics'}">Analytics</router-link></li>
+        <li><router-link to="{path: '/', hash: '#faqs'}">FAQs</router-link></li>
       </ul>
     </nav>
     <div class="cta">
