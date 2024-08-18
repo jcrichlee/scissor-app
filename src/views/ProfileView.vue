@@ -60,6 +60,10 @@
         <p><strong>Total Clicks:</strong> {{ totalClicks }}</p>
       </div>
     </div>
+    
+    <router-link :to="{path: '/', hash: '#analytics'}">
+      <button v-if="signedIn" class="primary">+ Shorten a new URL ✨</button>
+    </router-link>
 
     <!-- Message for users not signed in -->
     <div v-if="!signedIn" class="not-signed-in-message">
@@ -118,7 +122,7 @@ const fetchUserData = async () => {
 
     if (userSnapshot.exists()) {
       const userData = userSnapshot.data();
-      console.log("Fetched user data:", userData);
+      // console.log("Fetched user data:", userData);
 
       // Update the reactive references with the fetched user data
       firstname.value = userData.firstname || "No name available";
@@ -155,9 +159,9 @@ const fetchUserUrls = async () => {
 
     urls.value = fetchedUrls;
     urlCount.value = fetchedUrls.length;
-    console.log("Fetched URLs:", fetchedUrls);
+    // console.log("Fetched URLs:", fetchedUrls);
   } catch (error) {
-    console.error("Error fetching URLs:", error.message);
+    // console.error("Error fetching URLs:", error.message);
   }
 };
 
@@ -168,8 +172,8 @@ onMounted(() => {
       email.value = user.email;
       userId.value = user.uid;
       signedIn.value = true;
-      console.log("Authenticated user email:", email.value);
-      console.log("Authenticated user ID:", userId.value);
+      // console.log("Authenticated user email:", email.value);
+      // console.log("Authenticated user ID:", userId.value);
       fetchUserData(); // Fetch user data after auth state is confirmed
       fetchUserUrls(); // Fetch URLs after auth state is confirmed
     } else {
@@ -257,10 +261,19 @@ button {
   height: 100%;
 }
 
-.tabs button.active {
+.tabs button.active, button.primary {
   background-color: #007bff;
   color: #fff;
   border-radius: 800px;
+}
+
+button.primary {
+  margin-top: 40px;
+  background-color: #007bff1c;
+  color: #007bff;
+  border: none;
+  min-width: 88vw;
+  height: 3.5rem;
 }
 
 .tab-content {
