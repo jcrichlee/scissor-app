@@ -1,4 +1,5 @@
 <template>
+  <PreloaderComponent />
   <div class="user-profile-container">
     <!-- User Profile and Tabs -->
     <div class="user-profile" v-if="signedIn">
@@ -72,6 +73,7 @@ import { ref, onMounted } from "vue";
 import { getDocs, collection, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { getAuth } from "firebase/auth";
+import PreloaderComponent from "@/components/PreloaderComponent.vue";
 
 // Helper function to generate a RoboHash avatar based on the user's email
 const generateAvatarUrl = (email) => {

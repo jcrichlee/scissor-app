@@ -1,5 +1,6 @@
 <template>
   <div>
+    <PreloaderComponent />
     <MainComponent />
     <FeaturesComponent />
     <WhyScissor />
@@ -22,6 +23,7 @@ import FaqSection from "@/components/FaqSection.vue";
 import PrefooterComponent from "@/components/PrefooterComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 import ScrollToTop from "@/components/ScrollToTop.vue";
+import PreloaderComponent from "@/components/PreloaderComponent.vue";
 </script>
 
 <style scoped>
