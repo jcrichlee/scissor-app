@@ -57,7 +57,7 @@
         </p>
         <p><strong>Email:</strong> {{ email }}</p>
         <p><strong>Total Shortened URLs:</strong> {{ urlCount }}</p>
-        <p><strong>Total Clicks:</strong> {{ totalClicks }}</p>
+        <!-- <p><strong>Total Clicks:</strong> {{ totalClicks }}</p> -->
       </div>
     </div>
     
