@@ -39,7 +39,7 @@
                   <strong>Shortened: </strong>
                   <a :href="url.shortenedURL" target="_blank">{{ url.shortenedURL }}</a>
                 </p>
-                <p class="clicks"><strong>Clicks:</strong> {{ url.clickCount || 0 }}</p>
+                <!-- <p class="clicks"><strong>Clicks:</strong> {{ url.clickCount || 0 }}</p> -->
                 <p class="created-at">
                   <strong>Created:</strong> {{ formatCreatedAt(url.createdAt) }}
                 </p>
